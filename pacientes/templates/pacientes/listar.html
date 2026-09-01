@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pacientes Veterinaria</title>
+</head>
+<body>
+
+    <h1>Lista de Mascotas</h1>
+
+    {% for mascota in mascotas %}
+        <p>
+            {{ mascota.nombre }} -
+            {{ mascota.especie }} -
+            {{ mascota.edad }} años -
+
+            {% if mascota.vacunacion == 'al_dia' %}
+                Al día
+            {% elif mascota.vacunacion == 'pendiente' %}
+                Pendiente
+            {% else %}
+                Alergia
+            {% endif %}
+        </p>
+    {% endfor %}
+
+</body>
+</html>
