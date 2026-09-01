@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Mascota
 
-def lista_mascotas(request):
+def listar_mascotas(request):
     mascotas = Mascota.objects.all()
-    return render(request, 'pacientes/listar.html', {'mascotas': mascotas})
+    return render(request, 'listar.html', {'mascotas': mascotas})
