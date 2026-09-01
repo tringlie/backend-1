@@ -8,6 +8,34 @@
 
     <h1>Lista de Mascotas</h1>
 
+    <form method="GET">
+
+        <input
+            type="text"
+            name="nombre"
+            placeholder="Buscar mascota por nombre"
+            value="{{ busqueda|default:'' }}"
+        >
+
+        <select name="especie">
+            <option value="">Todas las especies</option>
+            <option value="perro" {% if especie == 'perro' %}selected{% endif %}>Perro</option>
+            <option value="gato" {% if especie == 'gato' %}selected{% endif %}>Gato</option>
+        </select>
+
+        <select name="vacunacion">
+            <option value="">Todos los estados</option>
+            <option value="al_dia" {% if vacunacion == 'al_dia' %}selected{% endif %}>Al día</option>
+            <option value="pendiente" {% if vacunacion == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="alergia" {% if vacunacion == 'alergia' %}selected{% endif %}>Alergia</option>
+        </select>
+
+        <button type="submit">Buscar / Filtrar</button>
+
+    </form>
+
+    <br>
+
     {% for mascota in mascotas %}
         <p>
             {{ mascota.nombre }} -
@@ -15,13 +43,15 @@
             {{ mascota.edad }} años -
 
             {% if mascota.vacunacion == 'al_dia' %}
-                Al día
+                <span style="color: green;">Al día</span>
             {% elif mascota.vacunacion == 'pendiente' %}
-                Pendiente
+                <span style="color: red;">Pendiente</span>
             {% else %}
-                Alergia
+                <span style="color: goldenrod;">Alergia</span>
             {% endif %}
         </p>
+    {% empty %}
+        <p>No se encontraron mascotas.</p>
     {% endfor %}
 
 </body>
