@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Pacientes - Clínica Veterinaria</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 30px; 
+            background-color: #f8f9fa;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #2c3e50; 
+            color: white; 
+        }
+        .badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        /* Colores requeridos por el Caso 5 */
+        .verde { 
+            background-color: #d4edda; 
+            color: #155724; 
+        }
+        .rojo { 
+            background-color: #f8d7da; 
+            color: #721c24; 
+        }
+        .amarillo { 
+            background-color: #fff3cd; 
+            color: #856404; 
+        }
+    </style>
+</head>
+<body>
+    <h1>📋 Registro de Pacientes - Clínica Veterinaria</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Paciente</th>
+                <th>Especie</th>
+                <th>Edad (Años)</th>
+                <th>Estado de Vacunación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mascota in mascotas %}
+            <tr>
+                <td><strong>{{ mascota.nombre }}</strong></td>
+                <td>{{ mascota.especie }}</td>
+                <td>{{ mascota.edad }} años</td>
+                <td>
+                    {% if mascota.estado_vacunacion == 'AL_DIA' %}
+                        <span class="badge verde">Al día</span>
+                    {% elif mascota.estado_vacunacion == 'PENDIENTE' %}
+                        <span class="badge rojo">Pendiente</span>
+                    {% elif mascota.estado_vacunacion == 'ALERGIA' %}
+                        <span class="badge amarillo">Alergia a vacunas</span>
+                    {% else %}
+                        {{ mascota.estado_vacunacion }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center;">No hay pacientes registrados en el sistema.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

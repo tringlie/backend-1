@@ -17,7 +17,7 @@ class Mascota(models.Model):
     )
 
     def __str__(self):
-        return self.nombre
+        return f"nombre:{self.nombre}, especie:({self.especie})"
 
     class Meta:
         ordering = ['nombre']
