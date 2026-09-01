@@ -1,74 +1,152 @@
 # backend-1
-evaluacion 1 backend
 
-## Caso 5: Sistema de Pacientes para Clínica Veterinaria
+Evaluación 1 - Programación Back End
 
+## 🐾 Caso 5: Sistema de Pacientes para Clínica Veterinaria
 
-GUIA CHATGPT PARA EL TRABAJO
-
-# 🐾 Sistema de Pacientes - Clínica Veterinaria (Caso 5)
-
-Sistema web en **Django 4.2** para el control y estado de vacunación de pacientes veterinarios.
+Sistema web desarrollado con **Django 4.2** para el registro y control del estado de vacunación de pacientes veterinarios.
 
 ---
 
-## 🚀 Inicio Rápido (Windows + VSCode)
+## 🚀 Inicio rápido
 
 ### 1. Clonar y abrir el proyecto
-Abre la terminal de VSCode (`Ctrl + ñ` o `Ctrl + \``) y ejecuta:
-```powershell
-git clone [https://github.com/tringlie/backend-1](https://github.com/tringlie/backend-1)
-cd TU_REPOSITORIO
+
+```bash
+git clone https://github.com/tringlie/backend-1.git
+cd backend-1
 code .
+```
 
-2. Crear y activar el entorno virtual
-PowerShell
+### 2. Crear y activar el entorno virtual
 
-# Crear entorno
+#### Windows PowerShell
+
+```powershell
 python -m venv venv
-
-# Habilitar permisos (solo si PowerShell da error de scripts)
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-
-# Activar entorno
 .\venv\Scripts\Activate.ps1
+```
 
-(Debe aparecer (venv) al inicio de tu terminal).
+Si PowerShell bloquea la activación:
 
-    Tip VSCode: Presiona Ctrl + Shift + P > Python: Select Interpreter > Selecciona .\venv\Scripts\python.exe.
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+```
 
-3. Instalar dependencias
-PowerShell
+#### Linux
 
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Cuando el entorno esté activo debería aparecer `(venv)` al inicio de la terminal.
+
+### 3. Instalar dependencias
+
+```bash
 pip install -r requisitos.txt
+```
 
-4. Configurar base de datos y administrador
-PowerShell
+El proyecto utiliza **Django 4.2.19**.
 
+### 4. Configurar la base de datos
+
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
+
+### 5. Crear administrador
+
+```bash
 python manage.py createsuperuser
+```
 
-5. Iniciar servidor
-PowerShell
+Desde Django Admin se deben cargar como mínimo **5 mascotas**.
 
+### 6. Iniciar servidor
+
+```bash
 python manage.py runserver
+```
 
-    Panel de Administración: http://127.0.0.1:8000/admin/ (Cargar mínimo 5 mascotas)
+Panel de Administración:
 
-    Listado de Pacientes: http://127.0.0.1:8000/mascotas/
+http://127.0.0.1:8000/admin/
 
-🌿 Flujo de Trabajo en Git
+Listado de Pacientes:
 
-    Actualizar main: git pull origin main
+http://127.0.0.1:8000/pacientes/
 
-    Crear rama: git checkout -b feature/mi-tarea
+---
 
-    Guardar cambios:
-    PowerShell
+## 🐶 Funcionalidades
 
-    git add .
-    git commit -m "Descripción clara del cambio"
-    git push origin feature/mi-tarea
+El sistema permite:
 
-    Pull Request: Abrir PR en GitHub hacia main para revisión del equipo.
+- Listar todas las mascotas registradas.
+- Buscar mascotas por nombre.
+- Filtrar mascotas por especie.
+- Filtrar mascotas según su estado de vacunación.
+- Ver rápidamente las mascotas con vacunación pendiente.
+- Mostrar el estado de vacunación mediante colores:
+  - Verde: Al día.
+  - Rojo: Pendiente.
+  - Amarillo: Alergia.
+- Crear y editar mascotas mediante Django Admin.
+- Actualizar el estado de vacunación desde Django Admin.
+
+---
+
+## 📋 Modelo Mascota
+
+Cada mascota registra cuatro datos principales:
+
+```text
+Mascota
+├── nombre
+├── especie
+├── edad
+└── vacunación
+```
+
+Estados de vacunación disponibles:
+
+```text
+Al día
+Pendiente
+Alergia
+```
+
+---
+
+## 🌿 Flujo de trabajo en Git
+
+Actualizar `main`:
+
+```bash
+git switch main
+git pull origin main
+```
+
+Crear una rama:
+
+```bash
+git switch -c nombre-rama
+```
+
+Guardar cambios:
+
+```bash
+git add .
+git commit -m "Descripción clara del cambio"
+```
+
+Subir la rama:
+
+```bash
+git push -u origin nombre-rama
+```
+
+Luego abrir un **Pull Request hacia `main`** para revisión antes de integrar los cambios.
