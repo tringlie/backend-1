@@ -1,12 +1,78 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Pacientes Veterinaria</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f7f4;
+            margin: 40px;
+        }
+
+        h1 {
+            color: #198754;
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        input,
+        select,
+        button {
+            padding: 8px;
+            margin: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th {
+            background-color: #198754;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .al-dia {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            font-weight: bold;
+        }
+
+        .pendiente {
+            background-color: #f8d7da;
+            color: #842029;
+            font-weight: bold;
+        }
+
+        .alergia {
+            background-color: #fff3cd;
+            color: #664d03;
+            font-weight: bold;
+        }
+    </style>
+
 </head>
+
 <body>
 
-    <h1>Lista de Mascotas</h1>
+    <h1>🐾 Sistema de Pacientes Veterinarios</h1>
 
     <form method="GET">
 
@@ -19,40 +85,93 @@
 
         <select name="especie">
             <option value="">Todas las especies</option>
-            <option value="perro" {% if especie == 'perro' %}selected{% endif %}>Perro</option>
-            <option value="gato" {% if especie == 'gato' %}selected{% endif %}>Gato</option>
+            <option value="perro" {% if especie == 'perro' %}selected{% endif %}>
+                Perro
+            </option>
+            <option value="gato" {% if especie == 'gato' %}selected{% endif %}>
+                Gato
+            </option>
         </select>
 
         <select name="vacunacion">
             <option value="">Todos los estados</option>
-            <option value="al_dia" {% if vacunacion == 'al_dia' %}selected{% endif %}>Al día</option>
-            <option value="pendiente" {% if vacunacion == 'pendiente' %}selected{% endif %}>Pendiente</option>
-            <option value="alergia" {% if vacunacion == 'alergia' %}selected{% endif %}>Alergia</option>
+
+            <option value="al_dia" {% if vacunacion == 'al_dia' %}selected{% endif %}>
+                Al día
+            </option>
+
+            <option value="pendiente" {% if vacunacion == 'pendiente' %}selected{% endif %}>
+                Pendiente
+            </option>
+
+            <option value="alergia" {% if vacunacion == 'alergia' %}selected{% endif %}>
+                Alergia
+            </option>
         </select>
 
         <button type="submit">Buscar / Filtrar</button>
 
     </form>
 
-    <br>
+    <table>
 
-    {% for mascota in mascotas %}
-        <p>
-            {{ mascota.nombre }} -
-            {{ mascota.especie }} -
-            {{ mascota.edad }} años -
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Especie</th>
+                <th>Edad</th>
+                <th>Estado de vacunación</th>
+            </tr>
+        </thead>
 
-            {% if mascota.vacunacion == 'al_dia' %}
-                <span style="color: green;">Al día</span>
-            {% elif mascota.vacunacion == 'pendiente' %}
-                <span style="color: red;">Pendiente</span>
-            {% else %}
-                <span style="color: goldenrod;">Alergia</span>
-            {% endif %}
-        </p>
-    {% empty %}
-        <p>No se encontraron mascotas.</p>
-    {% endfor %}
+        <tbody>
+
+            {% for mascota in mascotas %}
+
+                <tr>
+                    <td>{{ mascota.nombre }}</td>
+
+                    <td>{{ mascota.especie }}</td>
+
+                    <td>{{ mascota.edad }} años</td>
+
+                    <td>
+                        {% if mascota.vacunacion == 'al_dia' %}
+
+                            <span class="al-dia">
+                                🟢 Al día
+                            </span>
+
+                        {% elif mascota.vacunacion == 'pendiente' %}
+
+                            <span class="pendiente">
+                                🔴 Pendiente
+                            </span>
+
+                        {% else %}
+
+                            <span class="alergia">
+                                🟡 Alergia
+                            </span>
+
+                        {% endif %}
+                    </td>
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="4">
+                        No se encontraron mascotas.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
 
 </body>
+
 </html>
