@@ -5,41 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Pacientes - Clínica Veterinaria</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f8f9fa; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 30px; 
+            background-color: #f8f9fa; 
+        }
         h1 { color: #2c3e50; }
-        table { width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #2c3e50; color: white; }
         
-        /* Estilos del Filtro */
-        .filtros-container { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .btn-filtro { padding: 8px 16px; border: 1px solid #ccc; text-decoration: none; border-radius: 20px; color: #333; background: #fff; font-size: 14px; }
+        /* Contenedor de Búsqueda y Filtros */
+        .controles-container {
+            background-color: #fff;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-busqueda {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .form-busqueda input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 280px;
+            font-size: 14px;
+        }
+        .btn-buscar {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-limpiar {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .filtros-especie {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-filtro {
+            padding: 6px 14px;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            border-radius: 20px;
+            color: #333;
+            background: #fdfdfd;
+            font-size: 13px;
+        }
         .btn-filtro:hover { background-color: #e2e6ea; }
-        .btn-filtro.activo { background-color: #2c3e50; color: #fff; font-weight: bold; }
-        
-        /* Colores requeridos por el Caso 5 */
-        .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; display: inline-block; }
-        .verde { background-color: #d4edda; color: #155724; }
-        .rojo { background-color: #f8d7da; color: #721c24; }
-        .amarillo { background-color: #fff3cd; color: #856404; }
+        .btn-filtro.activo {
+            background-color: #2c3e50;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Tabla de pacientes */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background-color: #fff; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 14px 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #2c3e50; 
+            color: white; 
+        }
+
+        /* Colores requeridos por el Caso 5 aplicados a la fila completa */
+        tr.fila-verde {
+            background-color: #d4edda !important;
+            color: #155724;
+        }
+        tr.fila-roja {
+            background-color: #f8d7da !important;
+            color: #721c24;
+        }
+        tr.fila-amarilla {
+            background-color: #fff3cd !important;
+            color: #856404;
+        }
+
+        .badge { 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
     <h1>📋 Registro de Pacientes - Clínica Veterinaria</h1>
 
-    <!-- Barra de Filtros por Especie -->
-    <div class="filtros-container">
-        <strong>Filtrar por especie:</strong>
-        <a href="{% url 'listar_mascotas' %}" class="btn-filtro {% if not especie_activa %}activo{% endif %}">
-            Todas
-        </a>
-        {% for esp in especies %}
-            <a href="?especie={{ esp }}" class="btn-filtro {% if especie_activa == esp %}activo{% endif %}">
-                {{ esp }}
+    <div class="controles-container">
+        <!-- Formulario de búsqueda -->
+        <form method="GET" action="" class="form-busqueda">
+            {% if especie_activa %}
+                <input type="hidden" name="especie" value="{{ especie_activa }}">
+            {% endif %}
+            
+            <input 
+                type="text" 
+                name="busqueda" 
+                placeholder="Buscar paciente por nombre..." 
+                value="{{ busqueda }}"
+                autocomplete="off"
+            >
+            <button type="submit" class="btn-buscar">🔍 Buscar</button>
+            
+            {% if busqueda or especie_activa %}
+                <a href="{% url 'listar_mascotas' %}" class="btn-limpiar">Limpiar filtros</a>
+            {% endif %}
+        </form>
+
+        <!-- Filtros por especie -->
+        <div class="filtros-especie">
+            <strong>Especie:</strong>
+            <a href="{% url 'listar_mascotas' %}{% if busqueda %}?busqueda={{ busqueda }}{% endif %}" 
+               class="btn-filtro {% if not especie_activa %}activo{% endif %}">
+                Todas
             </a>
-        {% endfor %}
+            {% for esp in especies %}
+                <a href="?especie={{ esp }}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}" 
+                   class="btn-filtro {% if especie_activa == esp %}activo{% endif %}">
+                    {{ esp }}
+                </a>
+            {% endfor %}
+        </div>
     </div>
 
+    <!-- Listado en Tabla -->
     <table>
         <thead>
             <tr>
@@ -51,26 +168,27 @@
         </thead>
         <tbody>
             {% for mascota in mascotas %}
-            <tr>
+            <!-- Asignación de color según los valores exactos de tu modelo ('al_dia', 'pendiente', 'alergia') -->
+            <tr class="{% if mascota.vacunacion == 'al_dia' %}fila-verde{% elif mascota.vacunacion == 'pendiente' %}fila-roja{% elif mascota.vacunacion == 'alergia' %}fila-amarilla{% endif %}">
                 <td><strong>{{ mascota.nombre }}</strong></td>
                 <td>{{ mascota.especie }}</td>
                 <td>{{ mascota.edad }} años</td>
                 <td>
-                    {% if mascota.estado_vacunacion == 'AL_DIA' %}
-                        <span class="badge verde">Al día</span>
-                    {% elif mascota.estado_vacunacion == 'PENDIENTE' %}
-                        <span class="badge rojo">Pendiente</span>
-                    {% elif mascota.estado_vacunacion == 'ALERGIA' %}
-                        <span class="badge amarillo">Alergia a vacunas</span>
+                    {% if mascota.vacunacion == 'al_dia' %}
+                        <span class="badge">🟢 Al día</span>
+                    {% elif mascota.vacunacion == 'pendiente' %}
+                        <span class="badge">🔴 Pendiente</span>
+                    {% elif mascota.vacunacion == 'alergia' %}
+                        <span class="badge">🟡 Alergia</span>
                     {% else %}
-                        {{ mascota.estado_vacunacion }}
+                        <span class="badge">{{ mascota.get_vacunacion_display|default:mascota.vacunacion }}</span>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" style="text-align: center; color: #666; padding: 20px;">
-                    No hay pacientes registrados para esta selección.
+                <td colspan="4" style="text-align: center; color: #777; padding: 20px;">
+                    No se encontraron pacientes que coincidan con los criterios.
                 </td>
             </tr>
             {% endfor %}
