@@ -5,50 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Pacientes - Clínica Veterinaria</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 30px; 
-            background-color: #f8f9fa;
-        }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        th, td { 
-            border: 1px solid #ddd; 
-            padding: 12px; 
-            text-align: left; 
-        }
-        th { 
-            background-color: #2c3e50; 
-            color: white; 
-        }
-        .badge {
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-        }
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f8f9fa; }
+        h1 { color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+        
+        /* Estilos del Filtro */
+        .filtros-container { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn-filtro { padding: 8px 16px; border: 1px solid #ccc; text-decoration: none; border-radius: 20px; color: #333; background: #fff; font-size: 14px; }
+        .btn-filtro:hover { background-color: #e2e6ea; }
+        .btn-filtro.activo { background-color: #2c3e50; color: #fff; font-weight: bold; }
+        
         /* Colores requeridos por el Caso 5 */
-        .verde { 
-            background-color: #d4edda; 
-            color: #155724; 
-        }
-        .rojo { 
-            background-color: #f8d7da; 
-            color: #721c24; 
-        }
-        .amarillo { 
-            background-color: #fff3cd; 
-            color: #856404; 
-        }
+        .badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; display: inline-block; }
+        .verde { background-color: #d4edda; color: #155724; }
+        .rojo { background-color: #f8d7da; color: #721c24; }
+        .amarillo { background-color: #fff3cd; color: #856404; }
     </style>
 </head>
 <body>
     <h1>📋 Registro de Pacientes - Clínica Veterinaria</h1>
-    
+
+    <!-- Barra de Filtros por Especie -->
+    <div class="filtros-container">
+        <strong>Filtrar por especie:</strong>
+        <a href="{% url 'listar_mascotas' %}" class="btn-filtro {% if not especie_activa %}activo{% endif %}">
+            Todas
+        </a>
+        {% for esp in especies %}
+            <a href="?especie={{ esp }}" class="btn-filtro {% if especie_activa == esp %}activo{% endif %}">
+                {{ esp }}
+            </a>
+        {% endfor %}
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -78,7 +69,9 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" style="text-align: center;">No hay pacientes registrados en el sistema.</td>
+                <td colspan="4" style="text-align: center; color: #666; padding: 20px;">
+                    No hay pacientes registrados para esta selección.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
