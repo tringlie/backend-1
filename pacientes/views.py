@@ -6,6 +6,7 @@ def listar_mascotas(request):
 
     especies = Mascota.objects.values_list('especie', flat=True).distinct()
     busqueda = request.GET.get('busqueda')
+    filtro_vacuna = request.GET.get('filtro_vacuna')
 
     especie_filtrada = request.GET.get('especie')
 
@@ -17,11 +18,15 @@ def listar_mascotas(request):
         if busqueda:
             mascotas = mascotas.filter(nombre__icontains=busqueda)
 
+    if filtro_vacuna:
+        mascotas = mascotas.filter(vacunacion=filtro_vacuna)    
+
     contexto = {
         'mascotas': mascotas,
         'especies': especies,
         'especie_activa': especie_filtrada or '',
         'busqueda': busqueda or '',
+        'filtro_vacuna': filtro_vacuna or '',
     }
 
 

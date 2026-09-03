@@ -12,7 +12,6 @@
         }
         h1 { color: #2c3e50; }
         
-        /* Contenedor de Búsqueda y Filtros */
         .controles-container {
             background-color: #fff;
             padding: 18px;
@@ -75,6 +74,22 @@
             font-weight: bold;
         }
 
+        /* Botón de acceso directo a pendientes */
+        .btn-alerta {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            font-weight: bold;
+        }
+        .btn-alerta:hover {
+            background-color: #f1b0b7;
+        }
+        .btn-alerta.activo {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
         /* Tabla de pacientes */
         table { 
             width: 100%; 
@@ -92,7 +107,7 @@
             color: white; 
         }
 
-        /* Colores requeridos por el Caso 5 aplicados a la fila completa */
+        /* Colores del Caso 5 */
         tr.fila-verde {
             background-color: #d4edda !important;
             color: #155724;
@@ -120,10 +135,13 @@
     <h1>📋 Registro de Pacientes - Clínica Veterinaria</h1>
 
     <div class="controles-container">
-        <!-- Formulario de búsqueda -->
+        <!-- Formulario adaptado a request.GET.get('busqueda') -->
         <form method="GET" action="" class="form-busqueda">
             {% if especie_activa %}
                 <input type="hidden" name="especie" value="{{ especie_activa }}">
+            {% endif %}
+            {% if filtro_vacuna %}
+                <input type="hidden" name="filtro_vacuna" value="{{ filtro_vacuna }}">
             {% endif %}
             
             <input 
@@ -135,20 +153,27 @@
             >
             <button type="submit" class="btn-buscar">🔍 Buscar</button>
             
-            {% if busqueda or especie_activa %}
-                <a href="{% url 'listar_mascotas' %}" class="btn-limpiar">Limpiar filtros</a>
+            {% if busqueda or especie_activa or filtro_vacuna %}
+                <a href="{% url 'listar_mascotas' %}" class="btn-limpiar">Mostrar todos / Limpiar</a>
             {% endif %}
         </form>
 
-        <!-- Filtros por especie -->
+        <!-- Filtros Rápidos y por Especie -->
         <div class="filtros-especie">
+            <!-- Botón adaptado a request.GET.get('filtro_vacuna') -->
+            <a href="?filtro_vacuna=pendiente{% if busqueda %}&busqueda={{ busqueda }}{% endif %}{% if especie_activa %}&especie={{ especie_activa }}{% endif %}" 
+               class="btn-filtro btn-alerta {% if filtro_vacuna == 'pendiente' %}activo{% endif %}">
+                🚨 Vacunas Pendientes
+            </a>
+
+            <span style="color: #ccc; margin: 0 4px;">|</span>
             <strong>Especie:</strong>
-            <a href="{% url 'listar_mascotas' %}{% if busqueda %}?busqueda={{ busqueda }}{% endif %}" 
+            <a href="{% url 'listar_mascotas' %}{% if busqueda %}?busqueda={{ busqueda }}{% endif %}{% if filtro_vacuna %}&filtro_vacuna={{ filtro_vacuna }}{% endif %}" 
                class="btn-filtro {% if not especie_activa %}activo{% endif %}">
                 Todas
             </a>
             {% for esp in especies %}
-                <a href="?especie={{ esp }}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}" 
+                <a href="?especie={{ esp }}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}{% if filtro_vacuna %}&filtro_vacuna={{ filtro_vacuna }}{% endif %}" 
                    class="btn-filtro {% if especie_activa == esp %}activo{% endif %}">
                     {{ esp }}
                 </a>
@@ -168,7 +193,6 @@
         </thead>
         <tbody>
             {% for mascota in mascotas %}
-            <!-- Asignación de color según los valores exactos de tu modelo ('al_dia', 'pendiente', 'alergia') -->
             <tr class="{% if mascota.vacunacion == 'al_dia' %}fila-verde{% elif mascota.vacunacion == 'pendiente' %}fila-roja{% elif mascota.vacunacion == 'alergia' %}fila-amarilla{% endif %}">
                 <td><strong>{{ mascota.nombre }}</strong></td>
                 <td>{{ mascota.especie }}</td>
@@ -188,7 +212,7 @@
             {% empty %}
             <tr>
                 <td colspan="4" style="text-align: center; color: #777; padding: 20px;">
-                    No se encontraron pacientes que coincidan con los criterios.
+                    No se encontraron pacientes que coincidan con los criterios seleccionados.
                 </td>
             </tr>
             {% endfor %}
