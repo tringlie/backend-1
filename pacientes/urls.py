@@ -4,6 +4,7 @@ from . import views
 
 
 urlpatterns = [
+    # Mascotas
     path(
         '',
         views.listar_mascotas,
@@ -23,5 +24,27 @@ urlpatterns = [
         'eliminar/<int:mascota_id>/',
         views.eliminar_mascota,
         name='eliminar_mascota',
+    ),
+
+    # Dueños
+    path(
+        'duenos/',
+        views.listar_duenos,
+        name='listar_duenos',
+    ),
+    path(
+        'duenos/agregar/',
+        views.agregar_dueno,
+        name='agregar_dueno',
+    ),
+    path(
+        'duenos/editar/<int:dueno_id>/',
+        views.editar_dueno,
+        name='editar_dueno',
+    ),
+    path(
+        'duenos/eliminar/<int:dueno_id>/',
+        views.eliminar_dueno,
+        name='eliminar_dueno',
     ),
 ]

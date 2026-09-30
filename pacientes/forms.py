@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from .models import Mascota
+from .models import Dueno, Mascota
 
 
 class MascotaForm(forms.ModelForm):
@@ -51,3 +51,35 @@ class MascotaForm(forms.ModelForm):
             )
 
         return peso
+
+
+class DuenoForm(forms.ModelForm):
+    class Meta:
+        model = Dueno
+
+        fields = [
+            'nombre',
+            'email',
+            'telefono',
+            'direccion',
+            'ciudad',
+        ]
+
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+
+        duenos = Dueno.objects.filter(
+            email__iexact=email
+        )
+
+        if self.instance.pk:
+            duenos = duenos.exclude(
+                pk=self.instance.pk
+            )
+
+        if duenos.exists():
+            raise forms.ValidationError(
+                'Ya existe un dueño registrado con este correo.'
+            )
+
+        return email

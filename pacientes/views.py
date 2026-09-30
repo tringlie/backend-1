@@ -1,10 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import MascotaForm
-from .models import Mascota
+from .forms import DuenoForm, MascotaForm
+from .models import Dueno, Mascota
 
+
+# =========================================================
+# MASCOTAS
+# =========================================================
 
 @login_required
 def listar_mascotas(request):
@@ -95,14 +100,10 @@ def agregar_mascota(request):
     else:
         form = MascotaForm()
 
-    contexto = {
-        'form': form,
-    }
-
     return render(
         request,
         'pacientes/agregar.html',
-        contexto,
+        {'form': form},
     )
 
 
@@ -133,15 +134,13 @@ def editar_mascota(request, mascota_id):
     else:
         form = MascotaForm(instance=mascota)
 
-    contexto = {
-        'form': form,
-        'mascota': mascota,
-    }
-
     return render(
         request,
         'pacientes/editar.html',
-        contexto,
+        {
+            'form': form,
+            'mascota': mascota,
+        },
     )
 
 
@@ -154,7 +153,6 @@ def eliminar_mascota(request, mascota_id):
 
     if request.method == 'POST':
         nombre = mascota.nombre
-
         mascota.delete()
 
         messages.success(
@@ -164,12 +162,146 @@ def eliminar_mascota(request, mascota_id):
 
         return redirect('listar_mascotas')
 
-    contexto = {
-        'mascota': mascota,
-    }
-
     return render(
         request,
         'pacientes/eliminar.html',
-        contexto,
+        {'mascota': mascota},
+    )
+
+
+# =========================================================
+# DUEÑOS
+# =========================================================
+
+@login_required
+def listar_duenos(request):
+    duenos = Dueno.objects.all().order_by('nombre')
+
+    busqueda = request.GET.get('nombre', '').strip()
+
+    if busqueda:
+        duenos = duenos.filter(
+            nombre__icontains=busqueda
+        )
+
+    return render(
+        request,
+        'pacientes/duenos/listar.html',
+        {
+            'duenos': duenos,
+            'busqueda': busqueda,
+        },
+    )
+
+
+@login_required
+def agregar_dueno(request):
+    if request.method == 'POST':
+        form = DuenoForm(request.POST)
+
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    form.save()
+
+            except IntegrityError:
+                form.add_error(
+                    'email',
+                    'Ya existe un dueño registrado con este correo.'
+                )
+
+            else:
+                messages.success(
+                    request,
+                    'Dueño registrado correctamente.'
+                )
+
+                return redirect('listar_duenos')
+
+    else:
+        form = DuenoForm()
+
+    return render(
+        request,
+        'pacientes/duenos/agregar.html',
+        {'form': form},
+    )
+
+
+@login_required
+def editar_dueno(request, dueno_id):
+    dueno = get_object_or_404(
+        Dueno,
+        id=dueno_id,
+    )
+
+    if request.method == 'POST':
+        form = DuenoForm(
+            request.POST,
+            instance=dueno,
+        )
+
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    form.save()
+
+            except IntegrityError:
+                form.add_error(
+                    'email',
+                    'Ya existe un dueño registrado con este correo.'
+                )
+
+            else:
+                messages.success(
+                    request,
+                    'Dueño actualizado correctamente.'
+                )
+
+                return redirect('listar_duenos')
+
+    else:
+        form = DuenoForm(instance=dueno)
+
+    return render(
+        request,
+        'pacientes/duenos/editar.html',
+        {
+            'form': form,
+            'dueno': dueno,
+        },
+    )
+
+
+@login_required
+def eliminar_dueno(request, dueno_id):
+    dueno = get_object_or_404(
+        Dueno,
+        id=dueno_id,
+    )
+
+    if request.method == 'POST':
+
+        if dueno.mascotas.exists():
+            messages.error(
+                request,
+                'No se puede eliminar el dueño porque tiene mascotas registradas.'
+            )
+
+            return redirect('listar_duenos')
+
+        nombre = dueno.nombre
+        dueno.delete()
+
+        messages.success(
+            request,
+            f'Dueño {nombre} eliminado correctamente.'
+        )
+
+        return redirect('listar_duenos')
+
+    return render(
+        request,
+        'pacientes/duenos/eliminar.html',
+        {'dueno': dueno},
     )
