@@ -47,4 +47,26 @@ urlpatterns = [
         views.eliminar_dueno,
         name='eliminar_dueno',
     ),
+
+    # Citas
+    path(
+        'citas/',
+        views.listar_citas,
+        name='listar_citas',
+    ),
+    path(
+        'citas/agregar/',
+        views.agregar_cita,
+        name='agregar_cita',
+    ),
+    path(
+        'citas/editar/<int:cita_id>/',
+        views.editar_cita,
+        name='editar_cita',
+    ),
+    path(
+        'citas/eliminar/<int:cita_id>/',
+        views.eliminar_cita,
+        name='eliminar_cita',
+    ),
 ]

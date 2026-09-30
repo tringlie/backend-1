@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import DuenoForm, MascotaForm
-from .models import Dueno, Mascota
+from .forms import CitaForm, DuenoForm, MascotaForm
+from .models import Cita, Dueno, Mascota
 
 
 # =========================================================
@@ -304,4 +305,130 @@ def eliminar_dueno(request, dueno_id):
         request,
         'pacientes/duenos/eliminar.html',
         {'dueno': dueno},
+    )
+
+
+# =========================================================
+# CITAS
+# =========================================================
+
+@login_required
+def listar_citas(request):
+    citas = (
+        Cita.objects
+        .select_related(
+            'mascota',
+            'mascota__dueno',
+        )
+        .order_by('fecha_hora')
+    )
+
+    busqueda = request.GET.get('buscar', '').strip()
+    estado = request.GET.get('estado', '').strip()
+
+    if busqueda:
+        citas = citas.filter(
+            Q(mascota__nombre__icontains=busqueda)
+            | Q(veterinario__icontains=busqueda)
+        )
+
+    if estado:
+        citas = citas.filter(estado=estado)
+
+    contexto = {
+        'citas': citas,
+        'busqueda': busqueda,
+        'estado': estado,
+    }
+
+    return render(
+        request,
+        'pacientes/citas/listar.html',
+        contexto,
+    )
+
+
+@login_required
+def agregar_cita(request):
+    if request.method == 'POST':
+        form = CitaForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Cita registrada correctamente.'
+            )
+
+            return redirect('listar_citas')
+
+    else:
+        form = CitaForm()
+
+    return render(
+        request,
+        'pacientes/citas/agregar.html',
+        {'form': form},
+    )
+
+
+@login_required
+def editar_cita(request, cita_id):
+    cita = get_object_or_404(
+        Cita,
+        id=cita_id,
+    )
+
+    if request.method == 'POST':
+        form = CitaForm(
+            request.POST,
+            instance=cita,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Cita actualizada correctamente.'
+            )
+
+            return redirect('listar_citas')
+
+    else:
+        form = CitaForm(instance=cita)
+
+    return render(
+        request,
+        'pacientes/citas/editar.html',
+        {
+            'form': form,
+            'cita': cita,
+        },
+    )
+
+
+@login_required
+def eliminar_cita(request, cita_id):
+    cita = get_object_or_404(
+        Cita,
+        id=cita_id,
+    )
+
+    if request.method == 'POST':
+        mascota = cita.mascota.nombre
+        cita.delete()
+
+        messages.success(
+            request,
+            f'Cita de {mascota} eliminada correctamente.'
+        )
+
+        return redirect('listar_citas')
+
+    return render(
+        request,
+        'pacientes/citas/eliminar.html',
+        {'cita': cita},
     )

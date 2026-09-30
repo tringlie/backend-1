@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar cita</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f7f4;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 550px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #842029;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        a {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>Eliminar cita</h1>
+
+        <p>
+            ¿Deseas eliminar la cita de
+            <strong>{{ cita.mascota.nombre }}</strong>
+            con {{ cita.veterinario }}?
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button type="submit">
+                Sí, eliminar
+            </button>
+
+            <a href="{% url 'listar_citas' %}">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

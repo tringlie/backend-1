@@ -1,0 +1,118 @@
+{% extends 'pacientes/base.html' %}
+
+{% block title %}Citas - Veterinaria{% endblock %}
+
+{% block contenido %}
+
+<h1>Citas veterinarias</h1>
+
+<div class="barra">
+    <a href="{% url 'agregar_cita' %}" class="boton agregar">
+        + Agregar cita
+    </a>
+</div>
+
+<form method="GET" class="filtros">
+
+    <input
+        type="text"
+        name="buscar"
+        placeholder="Buscar mascota o veterinario"
+        value="{{ busqueda }}"
+    >
+
+    <select name="estado">
+        <option value="">Todos los estados</option>
+
+        <option
+            value="PROGRAMADA"
+            {% if estado == 'PROGRAMADA' %}selected{% endif %}
+        >
+            Programada
+        </option>
+
+        <option
+            value="COMPLETADA"
+            {% if estado == 'COMPLETADA' %}selected{% endif %}
+        >
+            Completada
+        </option>
+
+        <option
+            value="CANCELADA"
+            {% if estado == 'CANCELADA' %}selected{% endif %}
+        >
+            Cancelada
+        </option>
+    </select>
+
+    <button type="submit">
+        Buscar / Filtrar
+    </button>
+
+</form>
+
+<div class="tabla-contenedor">
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Mascota</th>
+                <th>Dueño</th>
+                <th>Veterinario</th>
+                <th>Fecha y hora</th>
+                <th>Razón</th>
+                <th>Duración</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for cita in citas %}
+
+                <tr>
+                    <td>{{ cita.mascota.nombre }}</td>
+                    <td>{{ cita.mascota.dueno.nombre }}</td>
+                    <td>{{ cita.veterinario }}</td>
+                    <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+                    <td>{{ cita.razon }}</td>
+                    <td>{{ cita.duracion }} min</td>
+                    <td>{{ cita.get_estado_display }}</td>
+
+                    <td class="acciones">
+                        <a
+                            href="{% url 'editar_cita' cita.id %}"
+                            class="boton editar"
+                        >
+                            Editar
+                        </a>
+
+                        <a
+                            href="{% url 'eliminar_cita' cita.id %}"
+                            class="boton eliminar"
+                        >
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="8">
+                        No hay citas registradas.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

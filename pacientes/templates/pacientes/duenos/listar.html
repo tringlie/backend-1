@@ -1,233 +1,89 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends 'pacientes/base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}Dueños - Veterinaria{% endblock %}
 
-    <title>Dueños - Veterinaria</title>
+{% block contenido %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f7f4;
-            margin: 0;
-            padding: 30px;
-        }
+<h1>Dueños registrados</h1>
 
-        .contenedor {
-            max-width: 1100px;
-            margin: auto;
-        }
+<div class="barra">
+    <a href="{% url 'agregar_dueno' %}" class="boton agregar">
+        + Agregar dueño
+    </a>
+</div>
 
-        h1 {
-            text-align: center;
-            color: #198754;
-        }
+<form method="GET" class="filtros">
 
-        .barra {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
+    <input
+        type="text"
+        name="nombre"
+        placeholder="Buscar dueño por nombre"
+        value="{{ busqueda }}"
+    >
 
-        .boton {
-            display: inline-block;
-            padding: 9px 14px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: white;
-        }
+    <button type="submit">
+        Buscar
+    </button>
 
-        .agregar {
-            background-color: #198754;
-        }
+</form>
 
-        .volver {
-            background-color: #6c757d;
-        }
+<div class="tabla-contenedor">
 
-        .editar {
-            background-color: #0d6efd;
-        }
+    <table>
 
-        .eliminar {
-            background-color: #dc3545;
-        }
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Ciudad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
 
-        .mensaje {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
+        <tbody>
 
-        .success {
-            color: #0f5132;
-            background-color: #d1e7dd;
-        }
+            {% for dueno in duenos %}
 
-        .error {
-            color: #842029;
-            background-color: #f8d7da;
-        }
-
-        form.filtros {
-            background-color: white;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            display: flex;
-            gap: 10px;
-        }
-
-        input {
-            flex: 1;
-            padding: 9px;
-        }
-
-        button {
-            padding: 9px 14px;
-            background-color: #198754;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-
-        th {
-            background-color: #198754;
-            color: white;
-            padding: 12px;
-        }
-
-        td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .acciones {
-            white-space: nowrap;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="contenedor">
-
-        <h1>Dueños registrados</h1>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mensaje {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="barra">
-
-            <a
-                href="{% url 'agregar_dueno' %}"
-                class="boton agregar"
-            >
-                + Agregar dueño
-            </a>
-
-            <a
-                href="{% url 'listar_mascotas' %}"
-                class="boton volver"
-            >
-                Volver a mascotas
-            </a>
-
-        </div>
-
-        <form method="GET" class="filtros">
-
-            <input
-                type="text"
-                name="nombre"
-                placeholder="Buscar dueño por nombre"
-                value="{{ busqueda }}"
-            >
-
-            <button type="submit">
-                Buscar
-            </button>
-
-        </form>
-
-        <table>
-
-            <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Teléfono</th>
-                    <th>Dirección</th>
-                    <th>Ciudad</th>
-                    <th>Acciones</th>
+                    <td>{{ dueno.nombre }}</td>
+                    <td>{{ dueno.email }}</td>
+                    <td>{{ dueno.telefono }}</td>
+                    <td>{{ dueno.direccion }}</td>
+                    <td>{{ dueno.ciudad }}</td>
+
+                    <td class="acciones">
+                        <a
+                            href="{% url 'editar_dueno' dueno.id %}"
+                            class="boton editar"
+                        >
+                            Editar
+                        </a>
+
+                        <a
+                            href="{% url 'eliminar_dueno' dueno.id %}"
+                            class="boton eliminar"
+                        >
+                            Eliminar
+                        </a>
+                    </td>
                 </tr>
-            </thead>
 
-            <tbody>
+            {% empty %}
 
-                {% for dueno in duenos %}
+                <tr>
+                    <td colspan="6">
+                        No hay dueños registrados.
+                    </td>
+                </tr>
 
-                    <tr>
-                        <td>{{ dueno.nombre }}</td>
-                        <td>{{ dueno.email }}</td>
-                        <td>{{ dueno.telefono }}</td>
-                        <td>{{ dueno.direccion }}</td>
-                        <td>{{ dueno.ciudad }}</td>
+            {% endfor %}
 
-                        <td class="acciones">
+        </tbody>
 
-                            <a
-                                href="{% url 'editar_dueno' dueno.id %}"
-                                class="boton editar"
-                            >
-                                Editar
-                            </a>
+    </table>
 
-                            <a
-                                href="{% url 'eliminar_dueno' dueno.id %}"
-                                class="boton eliminar"
-                            >
-                                Eliminar
-                            </a>
+</div>
 
-                        </td>
-                    </tr>
-
-                {% empty %}
-
-                    <tr>
-                        <td colspan="6">
-                            No hay dueños registrados.
-                        </td>
-                    </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</body>
-
-</html>
+{% endblock %}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar cita</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f7f4;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 650px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #198754;
+            text-align: center;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 9px;
+            box-sizing: border-box;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #198754;
+            color: white;
+        }
+
+        a {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .errorlist {
+            color: #842029;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>Editar cita de {{ cita.mascota.nombre }}</h1>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit">
+                Guardar cambios
+            </button>
+
+            <a href="{% url 'listar_citas' %}">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>
