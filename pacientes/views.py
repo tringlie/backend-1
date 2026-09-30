@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import MascotaForm
 from .models import Mascota
 
 
@@ -65,5 +68,103 @@ def listar_mascotas(request):
     return render(
         request,
         'pacientes/listar.html',
+        contexto,
+    )
+
+
+def agregar_mascota(request):
+    if request.method == 'POST':
+        form = MascotaForm(
+            request.POST,
+            request.FILES,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Mascota registrada correctamente.'
+            )
+
+            return redirect('listar_mascotas')
+
+    else:
+        form = MascotaForm()
+
+    contexto = {
+        'form': form,
+    }
+
+    return render(
+        request,
+        'pacientes/agregar.html',
+        contexto,
+    )
+
+
+def editar_mascota(request, mascota_id):
+    mascota = get_object_or_404(
+        Mascota,
+        id=mascota_id,
+    )
+
+    if request.method == 'POST':
+        form = MascotaForm(
+            request.POST,
+            request.FILES,
+            instance=mascota,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                'Mascota actualizada correctamente.'
+            )
+
+            return redirect('listar_mascotas')
+
+    else:
+        form = MascotaForm(instance=mascota)
+
+    contexto = {
+        'form': form,
+        'mascota': mascota,
+    }
+
+    return render(
+        request,
+        'pacientes/editar.html',
+        contexto,
+    )
+
+
+def eliminar_mascota(request, mascota_id):
+    mascota = get_object_or_404(
+        Mascota,
+        id=mascota_id,
+    )
+
+    if request.method == 'POST':
+        nombre = mascota.nombre
+
+        mascota.delete()
+
+        messages.success(
+            request,
+            f'Mascota {nombre} eliminada correctamente.'
+        )
+
+        return redirect('listar_mascotas')
+
+    contexto = {
+        'mascota': mascota,
+    }
+
+    return render(
+        request,
+        'pacientes/eliminar.html',
         contexto,
     )

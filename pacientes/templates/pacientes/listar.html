@@ -19,6 +19,43 @@
             text-align: center;
         }
 
+        .mensaje {
+            text-align: center;
+            color: #0f5132;
+            background-color: #d1e7dd;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .acciones-superiores {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .boton-agregar,
+        .boton-editar,
+        .boton-eliminar {
+            display: inline-block;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .boton-agregar {
+            background-color: #198754;
+        }
+
+        .boton-editar {
+            background-color: #0d6efd;
+        }
+
+        .boton-eliminar {
+            background-color: #dc3545;
+        }
+
         form {
             margin-bottom: 20px;
             text-align: center;
@@ -29,6 +66,10 @@
         button {
             padding: 8px;
             margin: 4px;
+        }
+
+        button {
+            cursor: pointer;
         }
 
         table {
@@ -86,6 +127,23 @@
 <body>
 
     <h1>🐾 Sistema de Pacientes Veterinarios</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mensaje">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="acciones-superiores">
+        <a
+            href="{% url 'agregar_mascota' %}"
+            class="boton-agregar"
+        >
+            + Agregar mascota
+        </a>
+    </div>
 
     <form method="GET">
 
@@ -151,6 +209,7 @@
                 <th>Fecha de nacimiento</th>
                 <th>Peso</th>
                 <th>Estado</th>
+                <th>Acciones</th>
             </tr>
         </thead>
 
@@ -171,12 +230,28 @@
                             {{ mascota.estado_texto }}
                         </span>
                     </td>
+
+                    <td>
+                        <a
+                            href="{% url 'editar_mascota' mascota.id %}"
+                            class="boton-editar"
+                        >
+                            Editar
+                        </a>
+
+                        <a
+                            href="{% url 'eliminar_mascota' mascota.id %}"
+                            class="boton-eliminar"
+                        >
+                            Eliminar
+                        </a>
+                    </td>
                 </tr>
 
             {% empty %}
 
                 <tr>
-                    <td colspan="7">
+                    <td colspan="8">
                         No se encontraron mascotas.
                     </td>
                 </tr>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Eliminar mascota</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f7f4;
+            margin: 40px;
+        }
+
+        .contenedor {
+            max-width: 550px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #842029;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        a {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>Eliminar mascota</h1>
+
+        <p>
+            ¿Estás seguro de que deseas eliminar a
+            <strong>{{ mascota.nombre }}</strong>?
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button type="submit">
+                Sí, eliminar
+            </button>
+
+            <a href="{% url 'listar_mascotas' %}">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>
+
