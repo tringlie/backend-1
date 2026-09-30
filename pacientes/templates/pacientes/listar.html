@@ -11,37 +11,41 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f7f4;
-            margin: 40px;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: auto;
         }
 
         h1 {
             color: #198754;
             text-align: center;
+            margin-bottom: 25px;
         }
 
-        .mensaje {
-            text-align: center;
-            color: #0f5132;
-            background-color: #d1e7dd;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .acciones-superiores {
-            text-align: center;
-            margin-bottom: 15px;
+        .barra-acciones {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .boton-agregar,
         .boton-editar,
-        .boton-eliminar {
+        .boton-eliminar,
+        .boton-salir {
             display: inline-block;
+            padding: 9px 14px;
+            border-radius: 6px;
             text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 5px;
             color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         .boton-agregar {
@@ -56,26 +60,65 @@
             background-color: #dc3545;
         }
 
-        form {
+        .boton-salir {
+            background-color: #6c757d;
+        }
+
+        .logout-form {
+            margin: 0;
+        }
+
+        .mensaje {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            padding: 12px;
+            border-radius: 6px;
             margin-bottom: 20px;
             text-align: center;
+            font-weight: bold;
         }
 
-        input,
-        select,
-        button {
-            padding: 8px;
-            margin: 4px;
+        .filtros {
+            background-color: white;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
         }
 
-        button {
+        .filtros input,
+        .filtros select,
+        .filtros button {
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .filtros input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filtros button {
+            background-color: #198754;
+            color: white;
+            border: none;
             cursor: pointer;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+            background-color: white;
+            border-radius: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: white;
         }
 
         th {
@@ -94,7 +137,7 @@
             color: #0f5132;
             background-color: #d1e7dd;
             font-weight: bold;
-            padding: 4px 8px;
+            padding: 5px 9px;
             border-radius: 6px;
         }
 
@@ -102,7 +145,7 @@
             color: #664d03;
             background-color: #fff3cd;
             font-weight: bold;
-            padding: 4px 8px;
+            padding: 5px 9px;
             border-radius: 6px;
         }
 
@@ -110,7 +153,7 @@
             color: #842029;
             background-color: #f8d7da;
             font-weight: bold;
-            padding: 4px 8px;
+            padding: 5px 9px;
             border-radius: 6px;
         }
 
@@ -118,149 +161,226 @@
             color: #41464b;
             background-color: #e2e3e5;
             font-weight: bold;
-            padding: 4px 8px;
+            padding: 5px 9px;
             border-radius: 6px;
+        }
+
+        .acciones {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 15px;
+            }
+
+            .barra-acciones {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .boton-agregar,
+            .boton-salir {
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+
+            .filtros {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <h1>🐾 Sistema de Pacientes Veterinarios</h1>
+    <div class="contenedor">
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="mensaje">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+        <h1>🐾 Sistema de Pacientes Veterinarios</h1>
 
-    <div class="acciones-superiores">
-        <a
-            href="{% url 'agregar_mascota' %}"
-            class="boton-agregar"
-        >
-            + Agregar mascota
-        </a>
-    </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mensaje">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-    <form method="GET">
+        <div class="barra-acciones">
 
-        <input
-            type="text"
-            name="nombre"
-            placeholder="Buscar mascota por nombre"
-            value="{{ busqueda }}"
-        >
+            <a
+                href="{% url 'agregar_mascota' %}"
+                class="boton-agregar"
+            >
+                + Agregar mascota
+            </a>
 
-        <select name="especie">
-            <option value="">Todas las especies</option>
+            <form
+                method="POST"
+                action="{% url 'logout' %}"
+                class="logout-form"
+            >
+                {% csrf_token %}
 
-            {% for opcion in especies %}
-                <option
-                    value="{{ opcion }}"
-                    {% if especie == opcion %}selected{% endif %}
+                <button
+                    type="submit"
+                    class="boton-salir"
                 >
-                    {{ opcion }}
+                    Cerrar sesión
+                </button>
+            </form>
+
+        </div>
+
+        <form method="GET" class="filtros">
+
+            <input
+                type="text"
+                name="nombre"
+                placeholder="Buscar mascota por nombre"
+                value="{{ busqueda }}"
+            >
+
+            <select name="especie">
+
+                <option value="">
+                    Todas las especies
                 </option>
-            {% endfor %}
-        </select>
 
-        <select name="estado">
-            <option value="">Todos los estados</option>
+                {% for opcion in especies %}
+                    <option
+                        value="{{ opcion }}"
+                        {% if especie == opcion %}selected{% endif %}
+                    >
+                        {{ opcion }}
+                    </option>
+                {% endfor %}
 
-            <option
-                value="ACTIVO"
-                {% if estado == 'ACTIVO' %}selected{% endif %}
-            >
-                Activo
-            </option>
+            </select>
 
-            <option
-                value="INACTIVO"
-                {% if estado == 'INACTIVO' %}selected{% endif %}
-            >
-                Inactivo
-            </option>
+            <select name="estado">
 
-            <option
-                value="FALLECIDO"
-                {% if estado == 'FALLECIDO' %}selected{% endif %}
-            >
-                Fallecido
-            </option>
-        </select>
+                <option value="">
+                    Todos los estados
+                </option>
 
-        <button type="submit">
-            Buscar / Filtrar
-        </button>
+                <option
+                    value="ACTIVO"
+                    {% if estado == 'ACTIVO' %}selected{% endif %}
+                >
+                    Activo
+                </option>
 
-    </form>
+                <option
+                    value="INACTIVO"
+                    {% if estado == 'INACTIVO' %}selected{% endif %}
+                >
+                    Inactivo
+                </option>
 
-    <table>
+                <option
+                    value="FALLECIDO"
+                    {% if estado == 'FALLECIDO' %}selected{% endif %}
+                >
+                    Fallecido
+                </option>
 
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Especie</th>
-                <th>Raza</th>
-                <th>Dueño</th>
-                <th>Fecha de nacimiento</th>
-                <th>Peso</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
+            </select>
 
-        <tbody>
+            <button type="submit">
+                Buscar / Filtrar
+            </button>
 
-            {% for mascota in mascotas %}
+        </form>
 
-                <tr>
-                    <td>{{ mascota.nombre }}</td>
-                    <td>{{ mascota.especie }}</td>
-                    <td>{{ mascota.raza|default:"Sin raza" }}</td>
-                    <td>{{ mascota.dueno.nombre }}</td>
-                    <td>{{ mascota.fecha_nacimiento }}</td>
-                    <td>{{ mascota.peso }} kg</td>
+        <div class="tabla-contenedor">
 
-                    <td>
-                        <span class="{{ mascota.estado_clase }}">
-                            {{ mascota.estado_texto }}
-                        </span>
-                    </td>
+            <table>
 
-                    <td>
-                        <a
-                            href="{% url 'editar_mascota' mascota.id %}"
-                            class="boton-editar"
-                        >
-                            Editar
-                        </a>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Especie</th>
+                        <th>Raza</th>
+                        <th>Dueño</th>
+                        <th>Fecha de nacimiento</th>
+                        <th>Peso</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
-                        <a
-                            href="{% url 'eliminar_mascota' mascota.id %}"
-                            class="boton-eliminar"
-                        >
-                            Eliminar
-                        </a>
-                    </td>
-                </tr>
+                <tbody>
 
-            {% empty %}
+                    {% for mascota in mascotas %}
 
-                <tr>
-                    <td colspan="8">
-                        No se encontraron mascotas.
-                    </td>
-                </tr>
+                        <tr>
 
-            {% endfor %}
+                            <td>{{ mascota.nombre }}</td>
 
-        </tbody>
+                            <td>{{ mascota.especie }}</td>
 
-    </table>
+                            <td>
+                                {{ mascota.raza|default:"Sin raza" }}
+                            </td>
+
+                            <td>
+                                {{ mascota.dueno.nombre }}
+                            </td>
+
+                            <td>
+                                {{ mascota.fecha_nacimiento }}
+                            </td>
+
+                            <td>
+                                {{ mascota.peso }} kg
+                            </td>
+
+                            <td>
+                                <span class="{{ mascota.estado_clase }}">
+                                    {{ mascota.estado_texto }}
+                                </span>
+                            </td>
+
+                            <td class="acciones">
+
+                                <a
+                                    href="{% url 'editar_mascota' mascota.id %}"
+                                    class="boton-editar"
+                                >
+                                    Editar
+                                </a>
+
+                                <a
+                                    href="{% url 'eliminar_mascota' mascota.id %}"
+                                    class="boton-eliminar"
+                                >
+                                    Eliminar
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="8">
+                                No se encontraron mascotas.
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
 
 </body>
 

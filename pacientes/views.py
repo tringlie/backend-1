@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import MascotaForm
 from .models import Mascota
 
 
+@login_required
 def listar_mascotas(request):
     mascotas = Mascota.objects.select_related('dueno').all()
 
@@ -72,6 +74,7 @@ def listar_mascotas(request):
     )
 
 
+@login_required
 def agregar_mascota(request):
     if request.method == 'POST':
         form = MascotaForm(
@@ -103,6 +106,7 @@ def agregar_mascota(request):
     )
 
 
+@login_required
 def editar_mascota(request, mascota_id):
     mascota = get_object_or_404(
         Mascota,
@@ -141,6 +145,7 @@ def editar_mascota(request, mascota_id):
     )
 
 
+@login_required
 def eliminar_mascota(request, mascota_id):
     mascota = get_object_or_404(
         Mascota,
