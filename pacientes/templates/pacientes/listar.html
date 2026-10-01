@@ -71,6 +71,7 @@
 
         <thead>
             <tr>
+                <th>Foto</th>
                 <th>Nombre</th>
                 <th>Especie</th>
                 <th>Raza</th>
@@ -87,6 +88,24 @@
             {% for mascota in mascotas %}
 
                 <tr>
+
+                    <td>
+                        {% if mascota.foto %}
+                            <img
+                                src="{{ mascota.foto.url }}"
+                                alt="{{ mascota.nombre }}"
+                                style="
+                                    width: 60px;
+                                    height: 60px;
+                                    object-fit: cover;
+                                    border-radius: 8px;
+                                "
+                            >
+                        {% else %}
+                            Sin foto
+                        {% endif %}
+                    </td>
+
                     <td>{{ mascota.nombre }}</td>
                     <td>{{ mascota.especie }}</td>
                     <td>{{ mascota.raza|default:"Sin raza" }}</td>
@@ -130,7 +149,7 @@
             {% empty %}
 
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         No hay mascotas registradas.
                     </td>
                 </tr>
