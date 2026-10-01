@@ -2,10 +2,23 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import IntegrityError, transaction
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import (
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
+
 from .forms import CitaForm, DuenoForm, MascotaForm
-from .models import Cita, Dueno, Mascota
+from .models import Cita, Dueno, Mascota, Vacuna
 
 
 # =========================================================
@@ -444,3 +457,167 @@ def eliminar_cita(request, cita_id):
         'pacientes/citas/eliminar.html',
         {'cita': cita},
     )
+
+
+# =========================================================
+# CARNET DE VACUNACIÓN PDF
+# =========================================================
+
+@login_required
+@permission_required('pacientes.view_mascota', raise_exception=True)
+def carnet_vacunacion_pdf(request, mascota_id):
+    mascota = get_object_or_404(
+        Mascota.objects.select_related('dueno'),
+        id=mascota_id,
+    )
+
+    vacunas = (
+        Vacuna.objects
+        .filter(mascota=mascota)
+        .order_by('fecha_administracion')
+    )
+
+    response = HttpResponse(
+        content_type='application/pdf'
+    )
+
+    response['Content-Disposition'] = (
+        f'attachment; filename="carnet_{mascota.nombre}.pdf"'
+    )
+
+    documento = SimpleDocTemplate(
+        response,
+        pagesize=A4,
+        rightMargin=2 * cm,
+        leftMargin=2 * cm,
+        topMargin=2 * cm,
+        bottomMargin=2 * cm,
+    )
+
+    estilos = getSampleStyleSheet()
+    contenido = []
+
+    contenido.append(
+        Paragraph(
+            'Carnet de Vacunación',
+            estilos['Title'],
+        )
+    )
+
+    contenido.append(Spacer(1, 0.5 * cm))
+
+    contenido.append(
+        Paragraph(
+            f'<b>Mascota:</b> {mascota.nombre}',
+            estilos['Normal'],
+        )
+    )
+
+    contenido.append(
+        Paragraph(
+            f'<b>Dueño:</b> {mascota.dueno.nombre}',
+            estilos['Normal'],
+        )
+    )
+
+    contenido.append(
+        Paragraph(
+            f'<b>Especie:</b> {mascota.especie}',
+            estilos['Normal'],
+        )
+    )
+
+    contenido.append(Spacer(1, 0.7 * cm))
+
+    datos = [
+        [
+            'Vacuna',
+            'Fecha administración',
+            'Próximo refuerzo',
+            'Veterinario',
+        ]
+    ]
+
+    for vacuna in vacunas:
+        fecha = vacuna.fecha_administracion.strftime(
+            '%d/%m/%Y'
+        )
+
+        if vacuna.proximo_refuerzo:
+            refuerzo = vacuna.proximo_refuerzo.strftime(
+                '%d/%m/%Y'
+            )
+        else:
+            refuerzo = 'Sin fecha'
+
+        datos.append(
+            [
+                vacuna.nombre,
+                fecha,
+                refuerzo,
+                vacuna.veterinario,
+            ]
+        )
+
+    if vacunas.exists():
+        tabla = Table(
+            datos,
+            colWidths=[
+                4 * cm,
+                4 * cm,
+                4 * cm,
+                4 * cm,
+            ],
+        )
+
+        tabla.setStyle(
+            TableStyle(
+                [
+                    (
+                        'BACKGROUND',
+                        (0, 0),
+                        (-1, 0),
+                        colors.lightgrey,
+                    ),
+                    (
+                        'GRID',
+                        (0, 0),
+                        (-1, -1),
+                        0.5,
+                        colors.grey,
+                    ),
+                    (
+                        'VALIGN',
+                        (0, 0),
+                        (-1, -1),
+                        'MIDDLE',
+                    ),
+                    (
+                        'FONTNAME',
+                        (0, 0),
+                        (-1, 0),
+                        'Helvetica-Bold',
+                    ),
+                    (
+                        'ALIGN',
+                        (1, 1),
+                        (2, -1),
+                        'CENTER',
+                    ),
+                ]
+            )
+        )
+
+        contenido.append(tabla)
+
+    else:
+        contenido.append(
+            Paragraph(
+                'Esta mascota no tiene vacunas registradas.',
+                estilos['Normal'],
+            )
+        )
+
+    documento.build(contenido)
+
+    return response

@@ -25,6 +25,11 @@ urlpatterns = [
         views.eliminar_mascota,
         name='eliminar_mascota',
     ),
+    path(
+        'mascotas/<int:mascota_id>/carnet-vacunacion/',
+        views.carnet_vacunacion_pdf,
+        name='carnet_vacunacion_pdf',
+    ),
 
     # Dueños
     path(

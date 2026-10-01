@@ -101,6 +101,15 @@
                     </td>
 
                     <td class="acciones">
+
+                        <a
+                            href="{% url 'carnet_vacunacion_pdf' mascota.id %}"
+                            class="boton"
+                            style="background-color: #6c757d;"
+                        >
+                            Carnet PDF
+                        </a>
+
                         <a
                             href="{% url 'editar_mascota' mascota.id %}"
                             class="boton editar"
@@ -114,6 +123,7 @@
                         >
                             Eliminar
                         </a>
+
                     </td>
                 </tr>
 
