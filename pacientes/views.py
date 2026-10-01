@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -13,6 +13,7 @@ from .models import Cita, Dueno, Mascota
 # =========================================================
 
 @login_required
+@permission_required('pacientes.view_mascota', raise_exception=True)
 def listar_mascotas(request):
     mascotas = Mascota.objects.select_related('dueno').all()
 
@@ -81,6 +82,7 @@ def listar_mascotas(request):
 
 
 @login_required
+@permission_required('pacientes.add_mascota', raise_exception=True)
 def agregar_mascota(request):
     if request.method == 'POST':
         form = MascotaForm(
@@ -109,6 +111,7 @@ def agregar_mascota(request):
 
 
 @login_required
+@permission_required('pacientes.change_mascota', raise_exception=True)
 def editar_mascota(request, mascota_id):
     mascota = get_object_or_404(
         Mascota,
@@ -146,6 +149,7 @@ def editar_mascota(request, mascota_id):
 
 
 @login_required
+@permission_required('pacientes.delete_mascota', raise_exception=True)
 def eliminar_mascota(request, mascota_id):
     mascota = get_object_or_404(
         Mascota,
@@ -175,6 +179,7 @@ def eliminar_mascota(request, mascota_id):
 # =========================================================
 
 @login_required
+@permission_required('pacientes.view_dueno', raise_exception=True)
 def listar_duenos(request):
     duenos = Dueno.objects.all().order_by('nombre')
 
@@ -196,6 +201,7 @@ def listar_duenos(request):
 
 
 @login_required
+@permission_required('pacientes.add_dueno', raise_exception=True)
 def agregar_dueno(request):
     if request.method == 'POST':
         form = DuenoForm(request.POST)
@@ -230,6 +236,7 @@ def agregar_dueno(request):
 
 
 @login_required
+@permission_required('pacientes.change_dueno', raise_exception=True)
 def editar_dueno(request, dueno_id):
     dueno = get_object_or_404(
         Dueno,
@@ -275,6 +282,7 @@ def editar_dueno(request, dueno_id):
 
 
 @login_required
+@permission_required('pacientes.delete_dueno', raise_exception=True)
 def eliminar_dueno(request, dueno_id):
     dueno = get_object_or_404(
         Dueno,
@@ -313,6 +321,7 @@ def eliminar_dueno(request, dueno_id):
 # =========================================================
 
 @login_required
+@permission_required('pacientes.view_cita', raise_exception=True)
 def listar_citas(request):
     citas = (
         Cita.objects
@@ -349,6 +358,7 @@ def listar_citas(request):
 
 
 @login_required
+@permission_required('pacientes.add_cita', raise_exception=True)
 def agregar_cita(request):
     if request.method == 'POST':
         form = CitaForm(request.POST)
@@ -374,6 +384,7 @@ def agregar_cita(request):
 
 
 @login_required
+@permission_required('pacientes.change_cita', raise_exception=True)
 def editar_cita(request, cita_id):
     cita = get_object_or_404(
         Cita,
@@ -410,6 +421,7 @@ def editar_cita(request, cita_id):
 
 
 @login_required
+@permission_required('pacientes.delete_cita', raise_exception=True)
 def eliminar_cita(request, cita_id):
     cita = get_object_or_404(
         Cita,
