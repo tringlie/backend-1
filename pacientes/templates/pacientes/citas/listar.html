@@ -83,6 +83,7 @@
                     <td>{{ cita.get_estado_display }}</td>
 
                     <td class="acciones">
+
                         <a
                             href="{% url 'editar_cita' cita.id %}"
                             class="boton editar"
@@ -96,6 +97,7 @@
                         >
                             Eliminar
                         </a>
+
                     </td>
                 </tr>
 
@@ -114,5 +116,35 @@
     </table>
 
 </div>
+
+{% if citas.has_other_pages %}
+
+<div style="margin-top: 20px;">
+
+    {% if citas.has_previous %}
+        <a
+            href="?page={{ citas.previous_page_number }}&buscar={{ busqueda|urlencode }}&estado={{ estado|urlencode }}"
+            class="boton editar"
+        >
+            Anterior
+        </a>
+    {% endif %}
+
+    <span style="margin: 0 12px;">
+        Página {{ citas.number }} de {{ citas.paginator.num_pages }}
+    </span>
+
+    {% if citas.has_next %}
+        <a
+            href="?page={{ citas.next_page_number }}&buscar={{ busqueda|urlencode }}&estado={{ estado|urlencode }}"
+            class="boton editar"
+        >
+            Siguiente
+        </a>
+    {% endif %}
+
+</div>
+
+{% endif %}
 
 {% endblock %}

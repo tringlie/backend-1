@@ -54,6 +54,7 @@
                     <td>{{ dueno.ciudad }}</td>
 
                     <td class="acciones">
+
                         <a
                             href="{% url 'editar_dueno' dueno.id %}"
                             class="boton editar"
@@ -67,6 +68,7 @@
                         >
                             Eliminar
                         </a>
+
                     </td>
                 </tr>
 
@@ -85,5 +87,35 @@
     </table>
 
 </div>
+
+{% if duenos.has_other_pages %}
+
+<div style="margin-top: 20px;">
+
+    {% if duenos.has_previous %}
+        <a
+            href="?page={{ duenos.previous_page_number }}&nombre={{ busqueda|urlencode }}"
+            class="boton editar"
+        >
+            Anterior
+        </a>
+    {% endif %}
+
+    <span style="margin: 0 12px;">
+        Página {{ duenos.number }} de {{ duenos.paginator.num_pages }}
+    </span>
+
+    {% if duenos.has_next %}
+        <a
+            href="?page={{ duenos.next_page_number }}&nombre={{ busqueda|urlencode }}"
+            class="boton editar"
+        >
+            Siguiente
+        </a>
+    {% endif %}
+
+</div>
+
+{% endif %}
 
 {% endblock %}

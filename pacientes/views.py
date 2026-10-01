@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.http import HttpResponse
@@ -49,6 +50,10 @@ def listar_mascotas(request):
 
     if estado:
         mascotas = mascotas.filter(estado=estado)
+
+    paginator = Paginator(mascotas, 5)
+    numero_pagina = request.GET.get('page')
+    mascotas = paginator.get_page(numero_pagina)
 
     estados_config = {
         'ACTIVO': {
@@ -203,6 +208,10 @@ def listar_duenos(request):
             nombre__icontains=busqueda
         )
 
+    paginator = Paginator(duenos, 5)
+    numero_pagina = request.GET.get('page')
+    duenos = paginator.get_page(numero_pagina)
+
     return render(
         request,
         'pacientes/duenos/listar.html',
@@ -356,6 +365,10 @@ def listar_citas(request):
 
     if estado:
         citas = citas.filter(estado=estado)
+
+    paginator = Paginator(citas, 5)
+    numero_pagina = request.GET.get('page')
+    citas = paginator.get_page(numero_pagina)
 
     contexto = {
         'citas': citas,

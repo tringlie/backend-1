@@ -77,7 +77,7 @@
                 <th>Dueño</th>
                 <th>Fecha nacimiento</th>
                 <th>Peso</th>
-                <th>Estado</th>
+                <th>Estado mascota</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -142,5 +142,35 @@
     </table>
 
 </div>
+
+{% if mascotas.has_other_pages %}
+
+<div style="margin-top: 20px;">
+
+    {% if mascotas.has_previous %}
+        <a
+            href="?page={{ mascotas.previous_page_number }}&nombre={{ busqueda|urlencode }}&especie={{ especie|urlencode }}&estado={{ estado|urlencode }}"
+            class="boton editar"
+        >
+            Anterior
+        </a>
+    {% endif %}
+
+    <span style="margin: 0 12px;">
+        Página {{ mascotas.number }} de {{ mascotas.paginator.num_pages }}
+    </span>
+
+    {% if mascotas.has_next %}
+        <a
+            href="?page={{ mascotas.next_page_number }}&nombre={{ busqueda|urlencode }}&especie={{ especie|urlencode }}&estado={{ estado|urlencode }}"
+            class="boton editar"
+        >
+            Siguiente
+        </a>
+    {% endif %}
+
+</div>
+
+{% endif %}
 
 {% endblock %}
