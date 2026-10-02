@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -20,6 +22,30 @@ from reportlab.platypus import (
 
 from .forms import CitaForm, DuenoForm, MascotaForm
 from .models import Cita, Dueno, Mascota, Vacuna
+
+
+# =========================================================
+# AUTENTICACIÓN Y LOGIN PERSONALIZADO
+# =========================================================
+
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+
+    def get_success_url(self):
+        user = self.request.user
+        
+        # Si el usuario es administrador (staff o superuser), lo enviamos al Admin de Django
+        if user.is_superuser or user.is_staff:
+            return '/admin/'
+            
+        # Si el usuario pertenece al grupo 'recepcion', lo enviamos a la lista de mascotas (pacientes)
+        elif user.groups.filter(name='recepcion').exists():
+            # 'listar_mascotas' es el name de la URL que ya tienes configurada
+            return reverse_lazy('listar_mascotas')
+            
+        # Redirección por defecto si tiene otro rol (por ejemplo, si es un dueño)
+        else:
+            return reverse_lazy('listar_mascotas')
 
 
 # =========================================================
