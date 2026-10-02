@@ -1,6 +1,5 @@
 # Clínica Veterinaria
 
-
 Proyecto desarrollado para la asignatura **Programación Back End**.
 
 La aplicación permite gestionar la información principal de una clínica veterinaria, incluyendo dueños, mascotas, citas y vacunación.
