@@ -4,15 +4,16 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
+# Importamos la vista personalizada de login que creamos en views.py
+from pacientes.views import CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    # Usamos CustomLoginView en lugar de auth_views.LoginView
     path(
         'login/',
-        auth_views.LoginView.as_view(
-            template_name='registration/login.html'
-        ),
+        CustomLoginView.as_view(),
         name='login',
     ),
 
@@ -29,7 +30,6 @@ urlpatterns = [
         include('pacientes.urls'),
     ),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(
